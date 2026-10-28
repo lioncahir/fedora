@@ -1,0 +1,36 @@
+source_directories:
+    - ${HOME}
+
+source_directories_must_exist: false
+
+repositories:
+    - path: /media/NAS/Media/Backup/Mirko/dell-fedora-borg
+      label: NAS
+
+exclude_from:
+    - ${HOME}/.config/borgmatic/excludes
+
+exclude_caches: true
+one_file_system: true
+encryption_passphrase: "{credential file .borg-passphrase}"
+compression: zstd,10
+archive_name_format: '{now}'
+keep_within: 3m
+
+log_file: NASBackup.log
+log_file_format: '[{asctime}] {message}'
+list_details: true
+statistics: standard
+
+commands:
+    - before: repository
+      run:
+          - mountpoint -q /media/NAS/Media
+    - after: repository
+      when: [create]
+      states: [finish]
+      run:
+          - notify-send --icon="dialog-information" "Borgmatic" "Backup to NAS completed"
+    - after: error
+      run:
+          - notify-send --icon="dialog-warning" --urgency=critical "Borgmatic" "Backup to NAS failed"

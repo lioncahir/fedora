@@ -1,0 +1,49 @@
+[mgr]
+ratio          = [ 2, 3, 5 ]
+sort_by        = "extension"
+
+[preview]
+wrap            = "yes"
+max_width       = 800
+max_height      = 900
+cache_dir       = "~/.cache/yazi/"
+
+[opener]
+edit = [
+	{ run = "~/.config/yazi/scripts/term.sh vim %s1", desc = "Edit", orphan = true },
+	{ run = "bat %s1", desc = "View", block = true },
+]
+image = [
+	{ run = "~/.config/yazi/scripts/view_image.sh %s1", desc = "View image" },
+]
+info = [
+	{ run = '''mediainfo %s1; echo "Press enter to exit"; read _''', block = true, desc = "Show media info" },
+]
+wallpaper = [
+	{ run = "~/.config/yazi/scripts/set_wallpaper.sh %s1", desc = "Set as wallpaper" },
+]
+bulk-rename = [
+	{ run = "vim %s", block = true },
+]
+
+[open]
+prepend_rules = [
+	{ url = "bulk-rename.txt",                      use = [ "bulk-rename" ] },
+	{ mime = "text/html",                           use = [ "edit", "open", "reveal" ] },
+	{ mime = "image/*",                             use = [ "image", "wallpaper", "info", "reveal" ] },
+	{ mime = "application/epub+zip",                use = [ "open", "extract", "reveal" ] },
+]
+
+[tasks]
+image_bound = [ 6000, 6000 ]
+
+[plugin]
+prepend_fetchers = [
+    { url = "remote://*", run = "mime-ext.remote", prio = "high", group="mime" },
+    { url = "/media/*", run = "mime-ext.remote", prio = "high", group="mime" },
+]
+
+prepend_preloaders = [
+    { url = "/home/mirko/GDrive/*", run = "noop" },
+]
+

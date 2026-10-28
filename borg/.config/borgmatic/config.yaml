@@ -1,0 +1,36 @@
+source_directories:
+    - ${HOME}
+
+source_directories_must_exist: false
+
+repositories:
+    - path: ssh://qk9pm5q5@qk9pm5q5.repo.borgbase.com/./repo
+      label: borgbase
+
+exclude_from:
+    - ${HOME}/.config/borgmatic/excludes
+
+exclude_caches: true
+one_file_system: true
+encryption_passphrase: "{credential file .borg-passphrase}"
+compression: zstd,10
+archive_name_format: '{now}'
+keep_within: 3m
+
+log_file: BorgBase.log
+log_file_format: '[{asctime}] {message}'
+list_details: true
+statistics: standard
+
+commands:
+    - before: repository
+      run:
+          - ping -q -c 1 www.borgbase.com > /dev/null
+    - after: repository
+      when: [create]
+      states: [finish]
+      run:
+          - notify-send --icon="dialog-information" "Borgmatic" "Backup to BorgBase completed"
+    - after: error
+      run:
+          - notify-send --icon="dialog-warning" --urgency=critical "Borgmatic" "Backup to BorgBase failed"
