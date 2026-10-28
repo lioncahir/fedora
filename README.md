@@ -11,7 +11,9 @@ Welcome to my dotfiles. Follow the instructions below to clone the repo and stow
 
 1. Use GNU stow to create symlinks for selected application (use -v option for verbose output)
 
-    stow -v vim yazi
+   ```shell
+   stow -v vim yazi
+   ```
 
 ## Special considerations
 
